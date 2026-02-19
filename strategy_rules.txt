@@ -1,0 +1,2 @@
+Strategy 1: During Greed markets, increase allocation for ('Frequent', 'Large Cap') traders as they show the highest mean PnL.
+Strategy 2: During Fear markets, restrict trading to ('Frequent', 'Large Cap') styles, or reduce size for others.
