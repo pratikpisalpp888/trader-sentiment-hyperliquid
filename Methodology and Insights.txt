@@ -1,0 +1,42 @@
+
+ Methodology
+- Loaded the Fear/Greed Index dataset and the Hyperliquid historical trade dataset.
+- Converted timestamps to daily dates and merged trades with sentiment on date.
+- Normalized sentiment labels by mapping:
+  - Extreme Fear → Fear
+  - Extreme Greed → Greed
+  (This improves sample size while keeping the analysis interpretable.)
+- Built daily account-level metrics:
+  - Daily Net PnL = sum(Closed PnL) − sum(Fee)
+  - Win rate = wins / (wins + losses), win defined as Net PnL > 0 on a trade
+  - Trade frequency = trades per day
+  - Average trade size (USD)
+  - Directional bias (BUY share)
+  - Drawdown proxy using cumulative daily net PnL per account
+
+Note: leverage was not available in the provided trade export, so behavior analysis focuses on frequency, sizing, and directional bias.
+
+Insights (with evidence from outputs)
+1) Performance shifts between Fear and Greed:
+   - Daily net PnL distribution changes across sentiment regimes.
+   - Win rate and drawdown proxy show different behavior under Fear vs Greed.
+   Evidence: `outputs/performance_summary.csv`, `outputs/chart_pnl_dist.png`
+
+2) Traders change behavior depending on sentiment:
+   - Trade frequency differs between Fear and Greed days.
+   - Average trade size and buy/sell bias also change by regime.
+   Evidence: `outputs/behavior_summary.csv`, `outputs/chart_frequency.png`, `outputs/chart_size.png`
+
+3) Segment differences are meaningful (not all traders react the same):
+   - I segmented accounts into Frequent/Infrequent and Large/Small trade-size groups.
+   - Segment-level mean PnL differs between Fear vs Greed.
+   Evidence: `outputs/segmentation_matrix.csv`
+
+ Strategy Recommendations (Rules of Thumb)
+1) Regime-based participation:
+   - On Greed days, favor the trader-style segment that historically shows the best mean net PnL during Greed (see `segmentation_matrix.csv`).
+   - Practical action: allow higher activity for that segment; avoid increasing activity for segments that historically lose during Greed.
+
+2) Defensive trading on Fear days:
+   - On Fear days, reduce aggressiveness (trade size / frequency) for segments that historically show worse net PnL or deeper drawdowns.
+   - Practical action: cap trade frequency and reduce size for the weaker Fear-performing segment; keep risk tighter.
